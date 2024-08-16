@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Phishing Link Guardian{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #00CED1;
+            --background-color: #0B0B1A;
+            --surface-color: rgba(26, 26, 46, 0.8);
+            --text-color: #F0F8FF;
+            --accent-color: #FF69B4;
+            --box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            font-size: 18px;
+        }
+    
+        body.light-theme {
+            background: radial-gradient(ellipse at bottom, #F0F8FF 0%, #E6E6FA 100%);
+            color: #333;
+        }
+    
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+    
+        .starfield-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            animation: rotate 200s linear infinite;
+        }
+    
+        .starfield-layer:nth-child(2) {
+            animation-duration: 400s;
+        }
+    
+        .starfield-layer:nth-child(3) {
+            animation-duration: 600s;
+        }
+    
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+    
+        .twinkle {
+            animation: twinkle 4s infinite ease-in-out;
+        }
+    
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.2; }
+        }
+    
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--surface-color);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease, transform 0.3s ease;
+        }
+    
+        .container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(31, 38, 135, 0.5);
+        }
+    
+        .container.light-theme {
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+        }
+    
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+    
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+    
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+    
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+    
+        input::placeholder {
+            color: rgba(240, 248, 255, 0.6);
+        }
+    
+        button {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+    
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+    
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+        }
+    
+        button:hover::after {
+            left: -100%;
+            top: -100%;
+        }
+    
+        .result {
+            margin-top: 30px;
+            font-size: 1.4em;
+            font-weight: 400;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    
+        .loading {
+            display: none;
+            margin-top: 30px;
+        }
+    
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--text-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    
+        .history-section {
+            margin-top: 40px;
+            text-align: left;
+        }
+    
+        .history-section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+    
+        .history-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+    
+        .history-item:hover {
+            transform: translateX(5px);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+    
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    
+        .theme-switch button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 28px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+    
+        .theme-switch button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+    
+            h1 {
+                font-size: 2.5em;
+            }
+    
+            input, button {
+                font-size: 16px;
+            }
+    
+            .theme-switch {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    
+        .safe-browsing-tip {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            text-align: left;
+        }
+    
+        .safe-browsing-tip h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+    
+        .safe-browsing-tip p {
+            font-size: 1em;
+            line-height: 1.5;
+        }
+    
+        .url-strength-meter {
+            margin-top: 10px;
+            text-align: left;
+        }
+    
+        .meter-bar {
+            height: 5px;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            border-radius: 2px;
+        }
+    
+        .meter-text {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars">
+        <!-- Stars will be dynamically added here -->
+    </div>
+    <div class="theme-switch">
+        <button id="theme-toggle"><i class="fas fa-moon"></i></button>
+    </div>
+    <div class="container">
+        <h1>Phishing Link Guardian</h1>
+        <form id="prediction-form">
+            <div class="input-group">
+                <input type="text" id="url-input" placeholder="Enter URL to analyze" required>
+                <div id="url-strength-meter" class="url-strength-meter">
+                    <div class="meter-bar"></div>
+                    <p class="meter-text">URL Strength: <span id="strength-text">None</span></p>
+                </div>
+            </div>
+            <button type="submit">Analyze URL</button>
+        </form>
+        <div class="loading" id="loading"></div>
+        <div class="result" id="result"></div>
+        
+        <div class="history-section">
+            <h2>Recently Analyzed URLs</h2>
+            <div id="history-list"></div>
+        </div>
+        <div class="safe-browsing-tip">
+            <h3>Safe Browsing Tip:</h3>
+            <p id="tip-text"></p>
+        </div>
+    </div>
+    <script>
+        function createStarfield() {
+            const starfield = document.createElement('div');
+            starfield.className = 'starfield';
+    
+            const colors = ['#ffffff', '#fffaf0', '#afdaff', '#fff8e7'];
+            const layers = 3;
+    
+            for (let l = 0; l < layers; l++) {
+                const layer = document.createElement('div');
+                layer.className = 'starfield-layer';
+    
+                const stars = 100 + l * 50;
+    
+                for (let i = 0; i < stars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    
+                    const size = Math.random() * (2 - 0.5) + 0.5;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    
+                    star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    
+                    if (Math.random() > 0.7) {
+                        star.classList.add('twinkle');
+                    }
+    
+                    layer.appendChild(star);
+                }
+    
+                starfield.appendChild(layer);
+            }
+    
+            document.body.insertBefore(starfield, document.body.firstChild);
+        }
+    
+        window.addEventListener('load', createStarfield);
+    
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const container = document.querySelector('.container');
+    
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-theme');
+            container.classList.toggle('light-theme');
+            themeToggle.innerHTML = body.classList.contains('light-theme') ? 
+                '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    
+        const safeBrowsingTips = [
+            "Always check the URL in your browser's address bar before entering sensitive information.",
+            "Enable two-factor authentication on all your important accounts for an extra layer of security.",
+            "Be cautious of unsolicited emails asking you to click on links or download attachments.",
+            "Keep your operating system and software up to date to protect against known vulnerabilities.",
+            "Use a password manager to create and store strong, unique passwords for each of your accounts.",
+            "Be wary of deals that seem too good to be true - they often are.",
+            "Avoid using public Wi-Fi for sensitive transactions like online banking.",
+            "Regularly review your account statements and credit reports for any suspicious activity.",
+            "Be cautious when sharing personal information on social media platforms.",
+            "Use a reputable antivirus software and keep it updated."
+        ];
+    
+        function setRandomTip() {
+            const tipElement = document.getElementById('tip-text');
+            const randomIndex = Math.floor(Math.random() * safeBrowsingTips.length);
+            tipElement.textContent = safeBrowsingTips[randomIndex];
+        }
+    
+        const urlInput = document.getElementById('url-input');
+        const meterBar = document.querySelector('.meter-bar');
+        const strengthText = document.getElementById('strength-text');
+    
+        urlInput.addEventListener('input', analyzeURL);
+    
+        function analyzeURL() {
+            const url = urlInput.value.trim();
+            let strength = 0;
+            let strengthLabel = 'Weak';
+    
+            if (url.startsWith('https://')) {
+                strength += 25;
+            }
+    
+            if (url.length > 10) {
+                strength += 15;
+            }
+    
+            const suspiciousKeywords = ['login', 'account', 'secure', 'bank'];
+            if (!suspiciousKeywords.some(keyword => url.includes(keyword))) {
+                strength += 20;
+            }
+    
+            const commonTLDs = ['.com', '.org', '.net', '.edu', '.gov'];
+            if (commonTLDs.some(tld => url.endsWith(tld))) {
+                strength += 20;
+            }
+    
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(url)) {
+                strength += 20;
+            }
+    
+            if (strength >= 80) {
+                strengthLabel = 'Very Strong';
+            } else if (strength >= 60) {
+                strengthLabel = 'Strong';
+            } else if (strength >= 40) {
+                strengthLabel = 'Moderate';
+            }
+    
+            meterBar.style.width = `${strength}%`;
+            meterBar.style.backgroundColor = getColorForStrength(strength);
+            strengthText.textContent = strengthLabel;
+        }
+    
+        function getColorForStrength(strength) {
+            if (strength >= 80) return '#4CAF50';
+            if (strength >= 60) return '#8BC34A';
+            if (strength >= 40) return '#FFC107';
+            if (strength >= 20) return '#FF9800';
+            return '#F44336';
+        }
+    
+        window.addEventListener('load', setRandomTip);
+    
+        function updateHistory(url, result) {
+            const historyList = document.getElementById('history-list');
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `<strong>${url}</strong>: ${result}`;
+            historyList.insertBefore(historyItem, historyList.firstChild);
+    
+            if (historyList.children.length > 5) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+    
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const url = document.getElementById('url-input').value;
+            const loadingElement = document.getElementById('loading');
+            const resultElement = document.getElementById('result');
+    
+            loadingElement.style.display = 'block';
+            resultElement.innerText = '';
+            resultElement.classList.remove('show');
+    
+            fetch('/predict/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({
+                    'url': url
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingElement.style.display = 'none';
+                const predictionValue = data.prediction;
+                resultElement.innerText = `Prediction: ${predictionValue}% chance the URL is malicious`;
+                resultElement.style.backgroundColor = predictionValue > 50 ? 'rgba(231, 76, 60, 0.2)' : 'rgba(46, 204, 113, 0.2)';
+                resultElement.classList.add('show');
+                
+                updateHistory(url, `${predictionValue}% chance of being malicious`);
+            })
+            .catch(error => {
+                loadingElement.style.display = 'none';
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
